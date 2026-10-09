@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OSINT // SYSTEM DAEMON CONTROL</title>
+    <style>
+        /* Base Cyberpunk HUD Environment Reset */
+        body {
+            background-color: #070202;
+            background-image:
+                    linear-gradient(rgba(180, 0, 0, 0.04) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(180, 0, 0, 0.04) 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #ff3333;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 90vh;
+            overflow-x: hidden;
+        }
+
+        .hud-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            width: 100%;
+            max-width: 550px;
+            z-index: 10;
+        }
+
+        .hud-terminal {
+            background: rgba(15, 3, 3, 0.9);
+            border: 2px solid #b40000;
+            padding: 30px;
+            border-radius: 4px;
+            box-shadow: 0 0 20px rgba(180, 0, 0, 0.35), inset 0 0 15px rgba(180, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .hud-terminal::before {
+            content: attr(data-header);
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: #070202;
+            padding: 0 8px;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #ff4d4d;
+        }
+
+        h2 {
+            color: #ff4d4d;
+            margin-top: 0;
+            font-size: 20px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #b40000;
+            padding-bottom: 10px;
+            text-shadow: 0 0 8px rgba(255, 51, 51, 0.6);
+        }
+
+        p {
+            color: #aa3333;
+            font-size: 11px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            background: rgba(30, 5, 5, 0.7);
+            border: 1px solid #b40000;
+            border-radius: 2px;
+            box-sizing: border-box;
+            font-size: 13px;
+            color: #ff6666;
+            font-family: 'Courier New', Courier, monospace;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"]:focus {
+            border-color: #ff3333;
+            box-shadow: 0 0 10px rgba(255, 51, 51, 0.4);
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            background-color: #b40000;
+            color: #070202;
+            border: 1px solid #ff3333;
+            padding: 14px;
+            font-size: 13px;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            background-color: #ff3333;
+            box-shadow: 0 0 15px rgba(255, 51, 51, 0.6);
+        }
+
+        #statusMessage {
+            margin-top: 20px;
+            font-size: 12px;
+            letter-spacing: 1px;
+            color: #ff4d4d;
+            text-transform: uppercase;
+            border-top: 1px dashed rgba(180, 0, 0, 0.4);
+            padding-top: 12px;
+        }
+
+        /* Investigative Tracking Screen Module Hidden Default */
+        #analyzerModule {
+            display: none;
+        }
+
+        .telemetry-display {
+            background: rgba(20, 4, 4, 0.95);
+            border: 1px solid #aa3333;
+            padding: 20px;
+            font-size: 13px;
+            color: #ff9999;
+            line-height: 1.8;
+            text-align: left;
+            white-space: pre-wrap;
+            font-family: 'Courier New', Courier, monospace;
+            margin-top: 15px;
+        }
+
+        /* Cinematic Fullscreen Theater Grid System Overlay */
+        .video-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            z-index: 9999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Skip Presentation Button Accent Overlay */
+        .skip-btn {
+            position: absolute;
+            bottom: 30px;
+            right: 40px;
+            background: rgba(15, 3, 3, 0.8);
+            border: 1px solid #b40000;
+            color: #ff3333;
+            padding: 10px 20px;
+            font-size: 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            z-index: 10000;
+            width: auto;
+        }
+        .skip-btn:hover {
+            background: #ff3333;
+            color: #070202;
+        }
+    </style>
+</head>
+<body>
+
+<div class="video-overlay" id="cinemaTheater">
+    <video id="bootVideo" preload="auto" playsinline>
+        <source src="/cyber_boot.mp4" type="video/mp4">
+        System framework missing cinematic matrix runtime support layer.
+    </video>
+    <button class="skip-btn" onclick="completeCinematicFlow()">[ SKIP_INTRO ]</button>
+</div>
+
+<div class="hud-container">
+
+    <div class="hud-terminal" id="authModule" data-header="CORE_AUTHENTICATION // UTC_800">
+        <h2>GNS // OSINT_DAEMON</h2>
+        <p>INITIALIZE OPERATIONAL ROUTING FRAMEWORKS BY INJECTING THE TELEGRAM WEBHOOK CREDENTIAL MATRIX TOKEN BELOW.</p>
+
+        <input type="text" id="tokenInput" placeholder="[ ENTER_BOT_TOKEN_STREAM ]">
+        <button onclick="launchBot()">▶ EXECUTE_DAEMON</button>
+
+        <div id="statusMessage">STATUS // STANDBY_IDLE</div>
+    </div>
+
+    <div class="hud-terminal" id="analyzerModule" data-header="INTEL_EXTRACTOR // SCAN_ENGINE">
+        <h2>TARGET // TRACKING_MATRIX</h2>
+        <p>ENTER A DESTINATION TARGET IPV4 SYSTEM NODE PROTOCOL TO QUERY OPEN REPOSITORIES CONCURRENTLY.</p>
+
+        <input type="text" id="ipInput" placeholder="[ ENTER_TARGET_IP_ADDRESS ]">
+        <button onclick="analyzeIp()">⚡ ANALYZE_TARGET</button>
+
+        <div class="telemetry-display" id="telemetryOutput">SYSTEM_TELEMETRY // AWAITING_TARGET_NODE_INPUT...</div>
+    </div>
+
+</div>
+
+<script>
+    // Global workflow switch reveals downstream dashboard frame matrices instantly
+    function completeCinematicFlow() {
+        document.getElementById('cinemaTheater').style.display = 'none';
+        document.getElementById('authModule').style.display = 'none';
+        document.getElementById('analyzerModule').style.display = 'block';
+
+        const video = document.getElementById('bootVideo');
+        if (video) video.pause();
+    }
+
+    function launchBot() {
+        const token = document.getElementById('tokenInput').value.trim();
+        const statusDiv = document.getElementById('statusMessage');
+        const theater = document.getElementById('cinemaTheater');
+        const video = document.getElementById('bootVideo');
+
+        if (!token) {
+            statusDiv.style.color = '#ff3333';
+            statusDiv.innerText = "CRIT_ERR // TARGET TOKEN PARAMETER NULL";
+            return;
+        }
+
+        statusDiv.style.color = '#ff9999';
+        statusDiv.innerText = "STATUS // ALLOCATING CORE DAEMON TIMELINES...";
+
+        fetch('/api/bot/start', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'token=' + encodeURIComponent(token)
+        })
+            .then(response => response.text())
+            .then(data => {
+                if (data.includes("successfully")) {
+                    statusDiv.style.color = '#ff3333';
+                    statusDiv.innerText = "SYS_STATUS // ONLINE_OK";
+
+                    // Deploy the Theater Viewport Grid
+                    theater.style.display = 'flex';
+
+                    // Unmute audio channels and raise volume to 100%
+                    video.currentTime = 0;
+                    video.muted = false;
+                    video.volume = 1.0;
+
+                    // Fire playback sequence
+                    let playPromise = video.play();
+
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.log("Browser policy blocked audio matrix stream framework context automatically: ", error);
+                            // Security fallback block auto-intercept loop
+                            video.muted = true;
+                            video.play().catch(e => completeCinematicFlow());
+                        });
+                    }
+
+                    // Transition cleanly on video completion link
+                    video.onended = () => {
+                        completeCinematicFlow();
+                    };
+                } else {
+                    statusDiv.style.color = '#ff3333';
+                    statusDiv.innerText = "ERR // INITIALIZATION FAULT STATE DETECTED";
+                }
+            })
+            .catch(err => {
+                statusDiv.style.color = '#ff3333';
+                statusDiv.innerText = "NET_ERR // HOST SERVER ENGAGEMENT LOSS";
+            });
+    }
+
+    function analyzeIp() {
+        const ip = document.getElementById('ipInput').value.trim();
+        const outputBox = document.getElementById('telemetryOutput');
+
+        if (!ip) {
+            outputBox.innerText = "CRIT_ERR // TARGET NODE IP SPECIFICATION MISSING";
+            return;
+        }
+
+        outputBox.innerText = "🔍 RUNNING THREAT ENGINE QUERIES... PARSING MATRIX PORT CHANNELS...";
+
+        fetch('/api/bot/query?ip=' + encodeURIComponent(ip))
+            .then(response => response.text())
+            .then(data => {
+                // Strip out markdown formatting artifacts cleanly before injection
+                outputBox.innerText = data.replace(/\*|`/g, "");
+            })
+            .catch(err => {
+                outputBox.innerText = "ERR // TELEMETRY EXTRACTION FAILED TO SECURE PAYLOAD";
+            });
+    }
+</script>
+
+</body>
+</html>
